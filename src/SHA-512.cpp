@@ -25,7 +25,6 @@ std::string SHA512(std::istream &inputStream){
     uint64_t N[2];
     uint64_t a, b, c, d, e, f, g, h, T1, T2, Ch_efg, Maj_abc, Sigma_Uppercase_0_a, Sigma_Uppercase_1_e;
     memset(N, 0, 16);
-    std::string myHash = "";
 
     uint64_t H[] = {0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1, 0x510e527fade682d1,
                     0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179};
@@ -80,7 +79,6 @@ std::string SHA512(std::istream &inputStream){
                 }
             }
         }
-        //initialize a, b, c, d, e, f, g, h
         a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
 
         for(int j = 0; j < 80; j++){
@@ -111,6 +109,10 @@ std::string SHA512(std::istream &inputStream){
         H[6] = g + H[6];
         H[7] = h + H[7];
     }
+
+    std::ostringstream ss;
+    ss << std::hex << H[0] << H[1] << H[2] << H[3] << H[4] << H[5] << H[6] << H[7];
+    std::string myHash = ss.str();
     return myHash;
 }
 
