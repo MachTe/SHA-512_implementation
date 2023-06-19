@@ -8,6 +8,7 @@
 
 void update_W_j(uint64_t W[]){
     //Calculates W_j, shifts the array by one to the left and places W_j at the end of that array
+    //Implements what is called "SHA-512 message schedule" in the description pdf file.
     uint64_t tmp;
     tmp = (_rotr64(W[14], 19) ^ _rotr64(W[14], 61) ^ (W[14] >> 6)) + W[9] + (_rotr64(W[1],1) ^ _rotr64(W[1],8) ^ (W[1] >> 7)) + W[0];
     for(int i = 0; i < 15; i++){
@@ -18,13 +19,16 @@ void update_W_j(uint64_t W[]){
 
 
 std::string SHA512(std::istream &inputStream){
-    uint64_t M[16];
-    uint64_t N[2];
+    uint64_t M[16];     //carries 1024 bits of the message at a time.
+    uint64_t N[2];      //stores the size of the input message in bits.
     uint64_t a, b, c, d, e, f, g, h, T1, T2, Ch_efg, Maj_abc, Sigma_Uppercase_0_a, Sigma_Uppercase_1_e;
     memset(N, 0, 16);
 
+    //fractional parts of the square roots of the first eight prime numbers.
     uint64_t H[] = {0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1, 0x510e527fade682d1,
                     0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179};
+
+    //first sixty-four bits of the fractional parts of the cube roots of the first eighty primes.
     uint64_t K[] = {0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc, 0x3956c25bf348b538, 
                     0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118, 0xd807aa98a3030242, 0x12835b0145706fbe, 
                     0x243185be4ee4b28c, 0x550c7dc3d5ffb4e2, 0x72be5d74f27b896f, 0x80deb1fe3b1696b1, 0x9bdc06a725c71235, 
@@ -46,6 +50,8 @@ std::string SHA512(std::istream &inputStream){
     bool messageNotExhausted = true;
     bool oneIncluded = false;
     while (messageNotExhausted){
+        //this loop goes through the input stream and collects 1024 bit long message blocks at a time.
+        //memory demands are lowered my computing each message block right after it is collected.
         memset(M, 0, 128);
         for (int k = 0; k < 16; k++){
             i = 0;
@@ -76,17 +82,21 @@ std::string SHA512(std::istream &inputStream){
                 }
             }
         }
-        
+
+        //here the properly padded message block gets processed.
+        //the source pdf gives better explanation, than i ever could, of what is going on in this part of the code.
         a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
 
         for(int j = 0; j < 80; j++){
             if(j > 0){
                 update_W_j(M);
             }
+
             Ch_efg = (e & f) ^ (~e & g);
             Maj_abc = (a & b) ^ (a & c) ^ (b & c);
             Sigma_Uppercase_0_a = _rotr64(a, 28) ^ _rotr64(a, 34) ^ _rotr64(a, 39); 
             Sigma_Uppercase_1_e = _rotr64(e, 14) ^ _rotr64(e, 18) ^ _rotr64(e, 41);
+
             T1 = h + Sigma_Uppercase_1_e + Ch_efg + K[j] + M[0];
             T2 = Sigma_Uppercase_0_a + Maj_abc;
             h = g;
@@ -98,6 +108,7 @@ std::string SHA512(std::istream &inputStream){
             b = a;
             a = T1 + T2;
         }
+
         H[0] = a + H[0];
         H[1] = b + H[1];
         H[2] = c + H[2];
@@ -108,6 +119,8 @@ std::string SHA512(std::istream &inputStream){
         H[7] = h + H[7];
     }
 
+    //the final hash is being returned in the form of a string, as it is seen to be the most
+    //practical way. (standard libraries do not have integer data types of the size 512 bits.)
     std::ostringstream ss;
     ss << std::hex << H[0] << H[1] << H[2] << H[3] << H[4] << H[5] << H[6] << H[7];
     std::string myHash = ss.str();
