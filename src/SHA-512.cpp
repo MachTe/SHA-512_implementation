@@ -87,10 +87,29 @@ std::string SHA512(std::istream &inputStream){
             if(j > 0){
                 update_W_j(&M);
             }
-            //compute Ch_efg, Maj_abc, Sigma_Uppercase_0_a, Sigma_Uppercase_1_e
-            //set T1,T2,a,b,c,d,e,f,g,h
+            Ch_efg = (e & f) ^ ((~f) & g);
+            Maj_abc = (a & b) ^ (a & c) ^ (b & c);
+            Sigma_Uppercase_0_a = _rotr64(a, 28) ^ _rotr64(a, 34) ^ _rotr64(a, 39);
+            Sigma_Uppercase_1_e = _rotr64(e, 14) ^ _rotr64(e, 18) ^ _rotr64(e, 41);
+            T1 = h + Sigma_Uppercase_1_e + Ch_efg + K[j] + W[0];
+            T2 = Sigma_Uppercase_0_a + Maj_abc;
+            h = g;
+            g = f;
+            f = e;
+            e = d + T1;
+            d = c;
+            c = b;
+            b = a;
+            a = T1 + T2;
         }
-        //Update H[]
+        H[0] = a + H[0];
+        H[1] = b + H[1];
+        H[2] = c + H[2];
+        H[3] = d + H[3];
+        H[4] = e + H[4];
+        H[5] = f + H[5];
+        H[6] = g + H[6];
+        H[7] = h + H[7];
     }
     return myHash;
 }
