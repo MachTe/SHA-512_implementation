@@ -9,8 +9,14 @@
 #include <cmath>
 #include <string.h>
 
-uint64_t* update_W_j(uint64_t* W){
-    //takes W calculates W_j and shifts the array by one
+void update_W_j(uint64_t* W){
+    //Calculates W_j, shifts the array by one to the left and places W_j at the end of that array
+    uint64_t tmp;
+    tmp = (_rotr64(W[14], 19) ^ _rotr64(W[14], 61) ^ (W[14] >> 6)) + W[9] + (_rotr64(W[1],1) ^ _rotr64(W[1],8) ^ (W[1] >> 7)) + W[0];
+    for(int i = 0; i < 15; i++){
+        W[i] = W[i+1];
+    }
+    W[15] = tmp;
 }
 
 
@@ -75,8 +81,12 @@ std::string SHA512(std::istream &inputStream){
             }
         }
         //initialize a, b, c, d, e, f, g, h
+        a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
+
         for(int j = 0; j < 80; j++){
-            update_W_j(&M);
+            if(j > 0){
+                update_W_j(&M);
+            }
             //compute Ch_efg, Maj_abc, Sigma_Uppercase_0_a, Sigma_Uppercase_1_e
             //set T1,T2,a,b,c,d,e,f,g,h
         }
