@@ -2,10 +2,6 @@
 #include <fstream>
 #include <istream>
 #include <sstream>
-#include <bitset>
-#include <iomanip>
-#include <ios>
-#include <algorithm>
 #include <cmath>
 #include <string.h>
 
@@ -80,7 +76,7 @@ std::string SHA512(std::istream &inputStream){
                 }
             }
         }
-        std::cout << N[1] << std::endl;
+        
         a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
 
         for(int j = 0; j < 80; j++){
@@ -116,19 +112,4 @@ std::string SHA512(std::istream &inputStream){
     ss << std::hex << H[0] << H[1] << H[2] << H[3] << H[4] << H[5] << H[6] << H[7];
     std::string myHash = ss.str();
     return myHash;
-}
-
-
-int main(){
-    //text test
-    std::stringstream ss;
-    std::string a = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu";
-    ss << a;
-    //file test
-    //std::ifstream myfile;
-    //myfile.open ("test_file.gif", std::ios::in | std::ios::app | std::ios::binary);
-
-    std::string hashed = SHA512(ss);
-    std::cout << hashed;
-    return 0; 
 }
