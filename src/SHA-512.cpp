@@ -9,7 +9,8 @@
 #include <cmath>
 #include <string.h>
 
-void update_W_j(uint64_t* W){
+
+void update_W_j(uint64_t W[]){
     //Calculates W_j, shifts the array by one to the left and places W_j at the end of that array
     uint64_t tmp;
     tmp = (_rotr64(W[14], 19) ^ _rotr64(W[14], 61) ^ (W[14] >> 6)) + W[9] + (_rotr64(W[1],1) ^ _rotr64(W[1],8) ^ (W[1] >> 7)) + W[0];
@@ -79,17 +80,18 @@ std::string SHA512(std::istream &inputStream){
                 }
             }
         }
+        std::cout << N[1] << std::endl;
         a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
 
         for(int j = 0; j < 80; j++){
             if(j > 0){
-                update_W_j(&M);
+                update_W_j(M);
             }
-            Ch_efg = (e & f) ^ ((~f) & g);
+            Ch_efg = (e & f) ^ (~e & g);
             Maj_abc = (a & b) ^ (a & c) ^ (b & c);
-            Sigma_Uppercase_0_a = _rotr64(a, 28) ^ _rotr64(a, 34) ^ _rotr64(a, 39);
+            Sigma_Uppercase_0_a = _rotr64(a, 28) ^ _rotr64(a, 34) ^ _rotr64(a, 39); 
             Sigma_Uppercase_1_e = _rotr64(e, 14) ^ _rotr64(e, 18) ^ _rotr64(e, 41);
-            T1 = h + Sigma_Uppercase_1_e + Ch_efg + K[j] + W[0];
+            T1 = h + Sigma_Uppercase_1_e + Ch_efg + K[j] + M[0];
             T2 = Sigma_Uppercase_0_a + Maj_abc;
             h = g;
             g = f;
@@ -120,13 +122,13 @@ std::string SHA512(std::istream &inputStream){
 int main(){
     //text test
     std::stringstream ss;
-    std::string a = "test text";
+    std::string a = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu";
     ss << a;
     //file test
-    std::ifstream myfile;
-    myfile.open ("test_file.gif", std::ios::in | std::ios::app | std::ios::binary);
+    //std::ifstream myfile;
+    //myfile.open ("test_file.gif", std::ios::in | std::ios::app | std::ios::binary);
 
-    std::string hashed = SHA512(myfile);
+    std::string hashed = SHA512(ss);
     std::cout << hashed;
     return 0; 
 }
