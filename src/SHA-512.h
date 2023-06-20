@@ -10,7 +10,7 @@ void update_W_j(uint64_t W[]){
     //Calculates W_j, shifts the array by one to the left and places W_j at the end of that array
     //Implements what is called "SHA-512 message schedule" in the description pdf file.
     uint64_t tmp;
-    tmp = (_rotr64(W[14], 19) ^ _rotr64(W[14], 61) ^ (W[14] >> 6)) + W[9] + (_rotr64(W[1],1) ^ _rotr64(W[1],8) ^ (W[1] >> 7)) + W[0];
+    tmp = (((W[14] >> 19) | (W[14] << ((sizeof(W[14]) << 3) - 19))) ^ ((W[14] >> 61) | (W[14] << ((sizeof(W[14]) << 3) - 61))) ^ (W[14] >> 6)) + W[9] + (((W[1] >> 1) | (W[1] << ((sizeof(W[1]) << 3) - 1))) ^ ((W[1] >> 8) | (W[1] << ((sizeof(W[1]) << 3) - 8))) ^ (W[1] >> 7)) + W[0];
     for(int i = 0; i < 15; i++){
         W[i] = W[i+1];
     }
