@@ -91,12 +91,10 @@ std::string SHA512(std::istream &inputStream){
             if(j > 0){
                 update_W_j(M);
             }
-
             Ch_efg = (e & f) ^ (~e & g);
             Maj_abc = (a & b) ^ (a & c) ^ (b & c);
-            Sigma_Uppercase_0_a = _rotr64(a, 28) ^ _rotr64(a, 34) ^ _rotr64(a, 39); 
-            Sigma_Uppercase_1_e = _rotr64(e, 14) ^ _rotr64(e, 18) ^ _rotr64(e, 41);
-
+            Sigma_Uppercase_0_a = ((a >> 28) | (a << ((sizeof(a) << 3) - 28))) ^ ((a >> 34) | (a << ((sizeof(a) << 3) - 34))) ^ ((a >> 39) | (a << ((sizeof(a) << 3) - 39)));
+            Sigma_Uppercase_1_e = ((e >> 14) | (e << ((sizeof(a) << 3) - 14))) ^ ((e >> 18) | (e << ((sizeof(a) << 3) - 18))) ^ ((e >> 41) | (e << ((sizeof(e) << 3) - 41)));
             T1 = h + Sigma_Uppercase_1_e + Ch_efg + K[j] + M[0];
             T2 = Sigma_Uppercase_0_a + Maj_abc;
             h = g;
