@@ -120,7 +120,10 @@ std::string SHA512(std::istream &inputStream){
     //the final hash is being returned in the form of a string, as it is seen to be the most
     //practical way. (standard libraries do not have integer data types of the size 512 bits.)
     std::ostringstream ss;
-    ss << std::hex << H[0] << H[1] << H[2] << H[3] << H[4] << H[5] << H[6] << H[7];
+    for(int i = 0; i < 8; i++){
+        std::string tempstr = std::string(15 - (int)(log(H[i])/log(16)), '0');
+        ss << std::hex << tempstr << H[i];
+    }
     std::string myHash = ss.str();
     return myHash;
 }
